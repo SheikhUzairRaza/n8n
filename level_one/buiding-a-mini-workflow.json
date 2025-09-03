@@ -1,0 +1,69 @@
+{
+  "name": "buiding-a-mini-workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -96
+      ],
+      "id": "08f56f3b-cd5a-407d-9b3d-7d02c7cdc249",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "all",
+        "limit": 10,
+        "additionalFields": {
+          "keyword": "Automation"
+        }
+      },
+      "type": "n8n-nodes-base.hackerNews",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -96
+      ],
+      "id": "58f237b5-b232-4c00-b2d1-48e836292d21",
+      "name": "Get many items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many items": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "964743cc-bbe3-4e91-beaf-45ac2ff86160",
+  "meta": {
+    "instanceId": "df959049b4e460a2444ce5fb933d98fb026bdf3ae87eb8b322dd280ae1800378"
+  },
+  "id": "98x0czxC9q1upYeJ",
+  "tags": [
+    {
+      "createdAt": "2025-08-30T16:07:42.748Z",
+      "updatedAt": "2025-08-30T16:07:42.748Z",
+      "id": "kiTRPP6QhpergZ97",
+      "name": "hackernews"
+    }
+  ]
+}
