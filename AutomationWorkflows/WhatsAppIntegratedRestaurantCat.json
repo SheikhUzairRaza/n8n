@@ -1,0 +1,381 @@
+{
+  "name": "WhatsAppIntegratedRestaurantCat",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "Always check the menu before confirming an order.\n\nOnly accept orders for items marked Available.\n\nDo not allow ordering if the item’s stock/quantity is 0.\n\nShow item name, price, and availability clearly.\n\nFor every order, generate an Order ID in the format: ORD-YYYYMMDD-XXX.\n\nCapture essential details: Customer Name, Contact, Items, Quantity, Order Date, Payment Status.\n\nDefault Order Status = New.\n\nIf customer requests an unavailable item, politely inform them it’s not available.\n\nAll prices are per plate/meal (no fractions allowed).\n\nNotes can be added for custom requests."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        16
+      ],
+      "id": "e70ddef0-f5fc-4cea-886e-b2e4f749e1a8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "8a5b6784-fc7c-4d07-8f39-4a129c7c3bc4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rEcNoR1a7uHNUm2D",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=// Get previous memory (if any) from workflow data\nlet memory = $json.memory || [];\n\n// Get the new incoming WhatsApp message\nlet newMessage = $json.message || \"No message\";\n\n// Push the new message into memory (limit last 5 only)\nmemory.push(newMessage);\nif (memory.length > 5) {\n  memory = memory.slice(-5); // keep last 5 messages\n}\n\nreturn {\n  json: {\n    memory,\n    lastMessage: newMessage\n  }\n};\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        272
+      ],
+      "id": "7efa3ee8-5b15-4f0c-9204-f682f4ad2a2c",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo",
+          "mode": "list",
+          "cachedResultName": "Food_Items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 678831831,
+          "mode": "list",
+          "cachedResultName": "FAQs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit#gid=678831831"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        256
+      ],
+      "id": "05a6e5d3-b69d-4ee7-8432-c4c481e7d123",
+      "name": "FAQs",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t0pZ3E40izOBZk5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo",
+          "mode": "list",
+          "cachedResultName": "Food_Items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 917649141,
+          "mode": "list",
+          "cachedResultName": "Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit#gid=917649141"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        32,
+        256
+      ],
+      "id": "1ba922ca-f443-4ad7-8265-1b9ff9c7ed59",
+      "name": "Inventory",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t0pZ3E40izOBZk5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo",
+          "mode": "list",
+          "cachedResultName": "Food_Items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1630262339,
+          "mode": "list",
+          "cachedResultName": "booking of order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit#gid=1630262339"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Order ID": "={{ $fromAI('Order_ID', ``, 'string') }}",
+            "Product ": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Product_', ``, 'string') }}",
+            "Qty": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Qty', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product ",
+              "displayName": "Product ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Qty",
+              "displayName": "Qty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        256
+      ],
+      "id": "04e3aeb8-0048-4023-ae47-d8fbc753f9d8",
+      "name": "Book Order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t0pZ3E40izOBZk5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo",
+          "mode": "list",
+          "cachedResultName": "Food_Items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1630262339,
+          "mode": "list",
+          "cachedResultName": "booking of order",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1poeQKd-DzcFE2AuY1C8iLB4sSUiEJGjkGAczZodNdTo/edit#gid=1630262339"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        240
+      ],
+      "id": "5d0198da-f4d4-4e40-9c4a-2a8059191b26",
+      "name": "Retrieve Booked Order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t0pZ3E40izOBZk5r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {
+          "messageStatusUpdates": [
+            "all"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        16
+      ],
+      "id": "4e9b7508-0267-43ab-b15d-0ae5b9a0cacd",
+      "name": "WhatsApp Trigger",
+      "webhookId": "ba13adb7-174e-4a71-8b96-087040a1dd86",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "SzplrdXosvgSp75D",
+          "name": "WhatsApp OAuth account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "806984995829224",
+        "recipientPhoneNumber": "92 3149612124",
+        "textBody": "=Wait {{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "4b25882d-38ca-493d-9d3a-e24392a24769",
+      "name": "Send message",
+      "webhookId": "6e182a8c-0936-4efc-9eed-f968c52beb8a",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "vI541yzzEh2ge7el",
+          "name": "WhatsApp account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FAQs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Inventory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Book Order": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Booked Order": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4177ff0a-e5b9-403e-b5f0-f43bb9355439",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "58fea68a72e4371426c04997bbb26a649d512b9d873d70ed66122a041cc9a4d7"
+  },
+  "id": "tTKgzhsTpY7eHNTS",
+  "tags": []
+}
